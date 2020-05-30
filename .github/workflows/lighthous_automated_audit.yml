@@ -1,8 +1,5 @@
-name: Lighthouse audit
-
-on:
-  schedule:
-    - cron: "0 15 * * 6"
+name: Test Lighthouse Check with Minimum Score Enforcement
+on: [push]
 
 jobs:
   lighthouse-check:
@@ -15,16 +12,17 @@ jobs:
         id: lighthouseCheck
         with:
           outputDirectory: /tmp/artifacts
-          urls: "https://octopus.energy/,https://mylondonpower.com/,https://www.mandsenergy.com/"
+          urls: 'https://octopus.energy/,https://mylondonpower.com/,https://www.mandsenergy.com/'
       - name: Handle Lighthouse Check results
         uses: foo-software/lighthouse-check-status-action@master
         with:
+          accessToken: ${{ secrets.LIGHTHOUSE_CHECK_GITHUB_ACCESS_TOKEN }}
           lighthouseCheckResults: ${{ steps.lighthouseCheck.outputs.lighthouseCheckResults }}
-          minAccessibilityScore: "80"
-          minBestPracticesScore: "80"
-          minPerformanceScore: "80"
-          minProgressiveWebAppScore: "80"
-          minSeoScore: "80"
+          minAccessibilityScore: "40"
+          minBestPracticesScore: "40"
+          minPerformanceScore: "40"
+          minProgressiveWebAppScore: "40"
+          minSeoScore: "40"
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:
