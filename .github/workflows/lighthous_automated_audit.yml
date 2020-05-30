@@ -1,0 +1,32 @@
+name: Lighthouse audit
+
+on:
+  schedule:
+    - cron: "0 15 * * 6"
+
+jobs:
+  lighthouse-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: mkdir /tmp/artifacts
+      - name: Run Lighthouse
+        uses: foo-software/lighthouse-check-action@master
+        id: lighthouseCheck
+        with:
+          outputDirectory: /tmp/artifacts
+          urls: "https://octopus.energy/,https://mylondonpower.com/,https://www.mandsenergy.com/"
+      - name: Handle Lighthouse Check results
+        uses: foo-software/lighthouse-check-status-action@master
+        with:
+          lighthouseCheckResults: ${{ steps.lighthouseCheck.outputs.lighthouseCheckResults }}
+          minAccessibilityScore: "80"
+          minBestPracticesScore: "80"
+          minPerformanceScore: "80"
+          minProgressiveWebAppScore: "80"
+          minSeoScore: "80"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: Lighthouse reports
+          path: /tmp/artifacts
